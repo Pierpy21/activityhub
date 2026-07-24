@@ -18,9 +18,33 @@ const getEventStyles = (type: string) => {
   }
 };
 
+// Funzione per trovare l'indice del giorno corrente nel programma
+const getTodayIndex = () => {
+  const today = new Date();
+  
+  // Formatta la data di oggi in "YYYY-MM-DD"
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
+  const index = scheduleData.findIndex(d => d.date === todayStr);
+  
+  // Se oggi è dentro il programma usa quell'indice, altrimenti parte dal primo giorno (0)
+  return index !== -1 ? index : 0;
+};
+
 export default function SchedulePage() {
-  const [currentIndex, setCurrentIndex] = useState(1); // Parte dal 23 Luglio (Indice 1)
+  // Inizializza lo stato con il giorno corrente
+  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Imposta l'indice corretto dopo il montaggio lato client (per evitare disallineamenti di rendering)
+  useEffect(() => {
+    const todayIdx = getTodayIndex();
+    setCurrentIndex(todayIdx);
+  }, []);
+
   const currentDay = scheduleData[currentIndex];
 
   // Navigazione frecce
@@ -37,7 +61,7 @@ export default function SchedulePage() {
     }
   }, [currentIndex]);
 
-  if (!currentDay) return null; // Fallback di sicurezza
+  if (!currentDay) return null;
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 pb-24">
@@ -79,7 +103,6 @@ export default function SchedulePage() {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {scheduleData.map((day, idx) => {
-            // Estrapoliamo il numero dal "22 Jul" per il quadratino
             const dayNum = day.shortDate.split(' ')[0];
             
             return (
@@ -109,7 +132,6 @@ export default function SchedulePage() {
             
             return (
               <div key={idx} className="relative pl-6">
-                {/* Pallino sulla timeline */}
                 <span className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-4 border-slate-900 ${styles.bg}`}></span>
                 
                 <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 shadow-sm">
@@ -129,7 +151,6 @@ export default function SchedulePage() {
                     <span>{activity.location}</span>
                   </div>
 
-                  {/* Mostra le note solo se esistono */}
                   {activity.notes && (
                     <p className="text-[10px] text-slate-400 mt-2 italic bg-slate-900/50 p-2 rounded-md border border-slate-700/50">
                       {activity.notes}
