@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, MapPin, Clock, Info, Coffee, Utensils, Moon, Navigation } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Clock, Info, Coffee, Utensils, Moon, Navigation, ExternalLink } from 'lucide-react';
 import { scheduleData } from '@/data/scheduleData';
 
 // Helper per assegnare colori ed icone ai tipi di evento
@@ -146,10 +146,23 @@ export default function SchedulePage() {
                     {activity.title}
                   </h3>
                   
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>{activity.location}</span>
-                  </div>
+                  {activity.mapUrl ? (
+  <a 
+    href={activity.mapUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-1.5 text-xs text-amber-400 bg-amber-400/10 hover:bg-amber-400/20 px-2 py-1.5 rounded-lg border border-amber-500/20 transition-all active:scale-[0.98]"
+  >
+    <MapPin className="w-3.5 h-3.5" />
+    <span className="font-semibold underline underline-offset-2">{activity.location}</span>
+    <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
+  </a>
+) : (
+  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+    <MapPin className="w-3.5 h-3.5" />
+    <span>{activity.location}</span>
+  </div>
+)}
 
                   {activity.notes && (
                     <p className="text-[10px] text-slate-400 mt-2 italic bg-slate-900/50 p-2 rounded-md border border-slate-700/50">
